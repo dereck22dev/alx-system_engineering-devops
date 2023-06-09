@@ -1,1 +1,1 @@
-Initial commit
+Learn shell basics
