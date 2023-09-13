@@ -1,0 +1,2 @@
+#!/bin/bash
+ls -ap1 | grep -v '^\.\.$' | grep -v '^\.$' | sed -e 's#/$#/#' | LC_ALL=C sort -k1.1d -k1.2n -k1.3 | tr '\n' ',' | sed 's/, /, /g' | sed 's/,$/\//'
