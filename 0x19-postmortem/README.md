@@ -37,3 +37,5 @@ To solve this problem, Mongoose's connection logic was redesigned. Instead of sh
 5. Redesign the application API to handle database errors elegantly and avoid cascading failures.
 
 These changes will help prevent similar failures in the future, improving both system stability and user experience.
+
+![Servers is down again](./images.jpg)
