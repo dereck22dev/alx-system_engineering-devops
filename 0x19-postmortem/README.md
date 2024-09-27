@@ -1,3 +1,5 @@
+# Postmortem
+
 **Issue Summary**  
 **Duration**: The failure occurred on September 15th, 2024, from 10:30 AM to 12:00 PM UTC (1 hour 30 minutes).  
 **Impact**: During the failure, 70% of users could not access the API backend, leading to failed data requests and unresponsive dashboards for real-time metrics. Managers reported severe delays in the application’s performance, with a significant portion experiencing total service disruption.  
@@ -11,11 +13,11 @@
 - **10:45 AM**: Further investigation shows no network anomalies. Attention shifts to MongoDB performance.
 - **11:00 AM**: DevOps team checks connection pooling and notices that database connections are hitting the upper limit.
 - **11:10 AM**: A misleading path: engineers assume this is due to an increase in user traffic. Traffic logs are reviewed, showing no significant spike.
-- **11:25 AM**: Root cause identified: connection misconfiguration between database clusters causing requests to be routed to incorrect databases.
+- **11:25 AM**: Right cause identified: connection misconfiguration between database clusters causing requests to be routed to incorrect databases.
 - **11:40 AM**: Temporary fix applied: manual re-routing of database connections and clearing of misrouted queries.
 - **12:00 PM**: Full service restored after applying configuration updates to database connection handlers.
 
-**Root Cause and Resolution**  
+**Cause and Resolution**  
 The root cause is a problem related to MongoDB connection management in a multi-tenant environment. The system was designed to manage separate databases for each campaign, but due to a misconfiguration in the Mongoose connection logic (`mongoose.createConnection` was incorrectly used), database instances for multiple campaigns began to leak into each other. Queries destined for one campaign were therefore routed to another campaign's database, creating data integrity problems and overloading some connection pools.
 
 To solve this problem, Mongoose's connection logic was redesigned. Instead of sharing connection instances between requests, each campaign was assigned a separate, independent connection pool. This change ensured that database queries were routed to the right database instance without any overlap.
